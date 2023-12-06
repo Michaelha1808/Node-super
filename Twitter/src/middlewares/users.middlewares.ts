@@ -16,7 +16,7 @@ export const loginValidator = validate(
         options: async (value, { req }) => {
           const user = await databaseService.users.findOne({ email: value, password: hashPassword(req.body.password) })
           if (user === null) {
-            throw new Error(USERS_MESSAGES.USER_NOT_FOUND)
+            throw new Error(USERS_MESSAGES.EMAIL_OR_PASSWORD_IS_INCORRECT)
           }
           req.user = user
           return true
