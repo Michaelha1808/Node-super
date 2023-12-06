@@ -11,7 +11,7 @@ const usersRouter = Router()
  * Body:{name: string, email: string, password: string, confirm_password:string, date_of_birth:ISO8601}
  */
 
-usersRouter.post('/login', loginValidator, loginController)
+usersRouter.post('/login', loginValidator, wrapRequestHandler(loginController))
 usersRouter.post('/register', registerValidator, wrapRequestHandler(registerController))
 
 export default usersRouter
