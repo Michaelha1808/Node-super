@@ -3,7 +3,7 @@ import databaseService from './database.services'
 import { RegisterReqBody } from '~/models/requests/User.requests'
 import { hashPassword } from '~/utils/scrypto'
 import { signToken } from '~/utils/jwt'
-import { TokenType } from '~/constants/enums'
+import { TokenType, UserVerifyStatus } from '~/constants/enums'
 import RefreshToken from '~/models/schemas/RefreshToken.shema'
 import { ObjectId } from 'mongodb'
 import { config } from 'dotenv'
@@ -93,26 +93,28 @@ class UsersService {
     }
   }
   async verifyEmail(user_id: string) {
-    // await databaseService.users.updateOne(
-    //   { _id: new ObjectId(user_id) },
-    //   {
-    //     $set: {
-    //       email_verify_token: '',
-    //       updated_at: new Date()
-    //     }
+    // updated_at: new Date():  Tạo giá trị cập nhật
+    // Mongo DB cập nhật giá trị:  $currentDate: {
+    //   updated_at: true
+    // }
+    // hoac
+    // [{
+    //   $set: {
+    //     email_verify_token: '',
+    //     updated_at: "$$NOW"
     //   }
-    // )
+    // }]
     const [token] = await Promise.all([
       this.signAccessAndRefreshToken(user_id),
-      databaseService.users.updateOne(
-        { _id: new ObjectId(user_id) },
+      databaseService.users.updateOne({ _id: new ObjectId(user_id) }, [
         {
           $set: {
             email_verify_token: '',
-            updated_at: new Date()
+            verify: UserVerifyStatus.Verified,
+            updated_at: '$$NOW'
           }
         }
-      )
+      ])
     ])
     const [access_token, refresh_token] = token
     return {
