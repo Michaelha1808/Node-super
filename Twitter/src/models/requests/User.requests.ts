@@ -8,7 +8,12 @@ export interface LoginReqBody {
 export interface ForgotPasswordReqBody {
   email: string
 }
-export interface verifyForgotPasswordReqBody {
+export interface VerifyForgotPasswordReqBody {
+  forgot_password_token: string
+}
+export interface ResetPasswordReqBody {
+  password: string
+  confirm_password: string
   forgot_password_token: string
 }
 export interface VerifyEmailReqBody {
