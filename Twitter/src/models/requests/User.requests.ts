@@ -30,6 +30,10 @@ export interface ResetPasswordReqBody {
 export interface VerifyEmailReqBody {
   email_verify_token: string
 }
+
+export interface GetProfileReqParams {
+  username: string
+}
 export interface RegisterReqBody {
   name: string
   email: string
