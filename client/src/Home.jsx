@@ -1,6 +1,7 @@
 import reactLogo from "./assets/react.svg";
 import viteLogo from "/vite.svg";
 import "./App.css";
+import { Link } from "react-router-dom";
 const getGoogleAuthUrl = () => {
   const { VITE_GOOGLE_CLIENT_ID, VITE_GOOGLE_REDIRECT_URI } = import.meta.env;
   const url = "https://accounts.google.com/o/oauth2/v2/auth";
@@ -8,10 +9,17 @@ const getGoogleAuthUrl = () => {
     client_id: VITE_GOOGLE_CLIENT_ID,
     redirect_uri: VITE_GOOGLE_REDIRECT_URI,
     response_type: "code",
-    scope: [""],
+    scope: [
+      "https://www.googleapis.com/auth/userinfo.profile",
+      "https://www.googleapis.com/auth/userinfo.email",
+    ].join(" "),
+    prompt: "consent",
+    access_type: "offline",
   };
+  const queryString = new URLSearchParams(query).toString();
+  return `${url}?${queryString}`;
 };
-
+const googleOAuthUrl = getGoogleAuthUrl();
 export default function Home() {
   return (
     <>
@@ -25,7 +33,7 @@ export default function Home() {
       </div>
       <h1>Google OAuth 2.0</h1>
       <p className="read-the-docs">
-        <button>Login with Google</button>
+        <Link to={googleOAuthUrl}>Login with Google</Link>
       </p>
     </>
   );

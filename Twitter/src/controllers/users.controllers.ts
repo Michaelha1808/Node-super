@@ -37,7 +37,13 @@ export const loginController = async (
     result
   })
 }
-
+export const oauthController = async (req: Request, res: Response, next: NextFunction) => {
+  const { code } = req.query
+  usersService.oauth(code as string)
+  return res.status(200).json({
+    message: USERS_MESSAGES.LOGIN_SUCCESS
+  })
+}
 export const registerController = async (
   req: Request<ParamsDictionary, any, RegisterReqBody>,
   res: Response,

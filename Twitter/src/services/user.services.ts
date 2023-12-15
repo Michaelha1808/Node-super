@@ -11,6 +11,7 @@ import { USERS_MESSAGES } from '~/constants/messages'
 import { ErrorWithStatus } from '~/models/Errors'
 import HTTP_STATUS from '~/constants/httpStatus'
 import Followers from '~/models/schemas/Followers.shema'
+import axios from 'axios'
 config()
 
 class UsersService {
@@ -114,6 +115,25 @@ class UsersService {
       access_token,
       refresh_token
     }
+  }
+  private async getOauthGoogleToken(code: string) {
+    const body = {
+      code,
+      client_id: process.env.GOOGLE_CLIENT_ID,
+      client_secret: process.env.GOOGLE_CLIENT_SECRET,
+      redirect_uri: process.env.GOOGLE_REDIRECT_URI,
+      grant_type: 'authorization_code'
+    }
+    const { data } = await axios.post('https://oauth2.googleapis.com/token', body, {
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded'
+      }
+    })
+    return data
+  }
+  async oauth(code: string) {
+    const data = await this.getOauthGoogleToken(code)
+    console.log(data)
   }
   async logout(refresh_token: string) {
     await databaseService.refreshToken.deleteOne({ token: refresh_token })
