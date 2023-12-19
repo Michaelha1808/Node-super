@@ -129,11 +129,68 @@ class UsersService {
         'Content-Type': 'application/x-www-form-urlencoded'
       }
     })
-    return data
+    return data as {
+      access_token: string
+      id_token: string
+    }
+  }
+  private async getGoogleUserInfor(access_token: string, id_token: string) {
+    const { data } = await axios.get('https://www.googleapis.com/oauth2/v1/userinfo', {
+      params: {
+        access_token,
+        alt: 'json'
+      },
+      headers: {
+        Authorization: `Bearer ${id_token}`
+      }
+    })
+    return data as {
+      id: string
+      email: string
+      verified_email: boolean
+      name: string
+      given_name: string
+      family_name: string
+      picture: string
+      locale: string
+    }
   }
   async oauth(code: string) {
-    const data = await this.getOauthGoogleToken(code)
-    console.log(data)
+    const { id_token, access_token } = await this.getOauthGoogleToken(code)
+    const userInfor = await this.getGoogleUserInfor(access_token, id_token)
+    if (!userInfor.verified_email) {
+      throw new ErrorWithStatus({
+        message: USERS_MESSAGES.GMAIL_NOT_VERIFIED,
+        status: HTTP_STATUS.BAD_REQUEST
+      })
+    }
+    // check this email registed
+    const user = await databaseService.users.findOne({ email: userInfor.email })
+    // if exist is already register, process to login
+    if (user) {
+      const [access_token, refresh_token] = await this.signAccessAndRefreshToken({
+        user_id: user._id.toString(),
+        verify: user.verify
+      })
+      await databaseService.refreshToken.insertOne(new RefreshToken({ user_id: user._id, token: refresh_token }))
+      return {
+        access_token,
+        refresh_token,
+        newUser: 0,
+        verify: user.verify
+      }
+    } else {
+      // not exitst, let create new user
+      const password = Math.random().toString(36).substring(2, 15)
+      const data = await this.register({
+        email: userInfor.email,
+        name: userInfor.name,
+        date_of_birth: new Date().toISOString(),
+        password,
+        confirm_password: password
+      })
+      return { ...data, newUser: 1, verify: UserVerifyStatus.Unverified }
+    }
   }
   async logout(refresh_token: string) {
     await databaseService.refreshToken.deleteOne({ token: refresh_token })
