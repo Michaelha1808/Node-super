@@ -9,7 +9,6 @@ export default function Login() {
     const refresh_token = params.get("refresh_token");
     const new_user = params.get("new_user");
     const verify = params.get("verify");
-
     // ở đây test ui cho trường hợp login
     // trường hợp register tạo ra popup rerify email
     localStorage.setItem("access_token", access_token);
