@@ -48,10 +48,14 @@ export const handleUploadVideo = async (req: Request) => {
   const form = formidable({
     uploadDir: UPLOAD_VIDEO_DIR,
     maxFiles: 1,
-    keepExtensions: true,
     maxFileSize: 50 * 1024 * 1024, // 50MB
     filter: function ({ name, originalFilename, mimetype }) {
       return true
+      // const valid = name === 'image' && Boolean(mimetype?.includes('image/'))
+      // if (!valid) {
+      //   form.emit('error' as any, new Error('File type is not valid') as any)
+      // }
+      // return valid
     }
   })
   return new Promise<File[]>((resolve, reject) => {
@@ -74,7 +78,7 @@ export const handleUploadVideo = async (req: Request) => {
   })
 }
 
-export const getNameFromFullName = (fullname: string) => {
+export const getNameFromFullname = (fullname: string) => {
   const namearr = fullname.split('.')
   namearr.pop()
   return namearr.join('')
