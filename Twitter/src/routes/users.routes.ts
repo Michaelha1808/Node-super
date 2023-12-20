@@ -8,6 +8,7 @@ import {
   loginController,
   logoutController,
   oauthController,
+  refreshTokenController,
   registerController,
   resendVerifyEmailController,
   resetPasswordController,
@@ -67,9 +68,17 @@ usersRouter.post('/register', registerValidator, wrapRequestHandler(registerCont
  * Path: /logout
  * Header:{Authorization: Bearer <access token>}
  * Method: Post
- * Body:{ refesh_token:string}
+ * Body:{ refresh_token:string}
  */
 usersRouter.post('/logout', accessTokenValidator, refreshTokenValidator, wrapRequestHandler(logoutController))
+
+/**
+ * Description. Refresh Token
+ * Path: /refresh-token
+ * Method: Post
+ * Body:{ refresh_token:string}
+ */
+usersRouter.post('/refresh-token', refreshTokenValidator, wrapRequestHandler(refreshTokenController))
 
 /**
  * Description. Verify email whe user click on the link email
