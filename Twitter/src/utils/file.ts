@@ -95,6 +95,7 @@ export const handleUploadVideo = async (req: Request) => {
 export const getNameFromFullname = (fullname: string) => {
   const namearr = fullname.split('.')
   namearr.pop()
+  console.log(namearr.join(''))
   return namearr.join('')
 }
 

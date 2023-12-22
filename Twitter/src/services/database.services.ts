@@ -3,6 +3,7 @@ import { config } from 'dotenv'
 import User from '~/models/schemas/User.schema'
 import RefreshToken from '~/models/schemas/RefreshToken.shema'
 import Followers from '~/models/schemas/Followers.shema'
+import VideoStatus from '~/models/schemas/VideoStatus.schema'
 config()
 const ENV = process.env
 const uri = `mongodb+srv://${ENV.DB_USERNAME}:${ENV.DB_PASSWORD}@cluster0.tuwsifh.mongodb.net/?retryWrites=true&w=majority`
@@ -38,6 +39,9 @@ class DatabaseService {
   }
   get followers(): Collection<Followers> {
     return this.db.collection(`${ENV.DB_FOLLOWERS_COLLECTION}` as string)
+  }
+  get videoStatus(): Collection<VideoStatus> {
+    return this.db.collection(`${ENV.DB_VIDEO_STATUS_COLLECTION}` as string)
   }
 }
 //TODO creat object from DatabaseService

@@ -54,6 +54,15 @@ export const serveSegmentController = (req: Request, res: Response, next: NextFu
     }
   })
 }
+export const videoStatusController = async (req: Request, res: Response, next: NextFunction) => {
+  const { id } = req.params
+  const result = await mediasService.getVideoStatus(id as string)
+  return res.json({
+    message: USERS_MESSAGES.GET_VIDEO_STATUS_SUCCESS,
+    result: result
+  })
+}
+
 export const serveVideoStreamController = async (req: Request, res: Response, next: NextFunction) => {
   const range = req.headers.range
   if (!range) {
