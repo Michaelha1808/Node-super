@@ -9,6 +9,7 @@ import { config } from 'dotenv'
 import { UPLOAD_VIDEO_DIR } from './constants/dir'
 import staticRouter from './routes/static.routes'
 import cors from 'cors'
+import { MongoClient } from 'mongodb'
 
 config()
 databaseService.connect()
@@ -29,3 +30,24 @@ app.use(defaultErrorHandler)
 app.listen(port, () => {
   console.log(`Listening on port ${port}`)
 })
+
+// const mgclient = new MongoClient(
+//   `mongodb+srv://${process.env.DB_USERNAME}:${process.env.DB_PASSWORD}@cluster0.tuwsifh.mongodb.net/?retryWrites=true&w=majority`
+// )
+// const db = mgclient.db('earth')
+
+// const users = db.collection('users')
+// const userData = []
+
+// function getRandomNumber() {
+//   return Math.floor(Math.random() * 100) + 1
+// }
+// for (let i = 0; i < 1000; i++) {
+//   userData.push({
+//     name: 'user' + (i + 1),
+//     age: getRandomNumber(),
+//     sex: i % 2 == 0 ? 'male' : 'female',
+//     address: ''
+//   })
+// }
+// users.insertMany(userData)
