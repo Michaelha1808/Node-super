@@ -10,6 +10,7 @@ import { UPLOAD_VIDEO_DIR } from './constants/dir'
 import staticRouter from './routes/static.routes'
 import cors from 'cors'
 import { MongoClient } from 'mongodb'
+import tweetsRouter from './routes/tweets.routes'
 
 config()
 databaseService.connect().then(() => {
@@ -29,6 +30,7 @@ app.use(express.json())
 app.use('/users', usersRouter)
 app.use('/medias', mediasRouter)
 app.use('/static', staticRouter)
+app.use('/tweets', tweetsRouter)
 
 app.use('/static/video', express.static(UPLOAD_VIDEO_DIR))
 app.use(defaultErrorHandler)
