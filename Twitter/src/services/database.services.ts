@@ -4,6 +4,7 @@ import User from '~/models/schemas/User.schema'
 import RefreshToken from '~/models/schemas/RefreshToken.shema'
 import Followers from '~/models/schemas/Followers.shema'
 import VideoStatus from '~/models/schemas/VideoStatus.schema'
+import Tweet from '~/models/schemas/Tweet.chema'
 config()
 const ENV = process.env
 const uri = `mongodb+srv://${ENV.DB_USERNAME}:${ENV.DB_PASSWORD}@cluster0.tuwsifh.mongodb.net/?retryWrites=true&w=majority`
@@ -62,7 +63,10 @@ class DatabaseService {
       this.followers.createIndex({ user_id: 1, followed_user_id: 1 })
     }
   }
-
+  get tweets(): Collection<Tweet> {
+    return this.db.collection(`${ENV.DB_TWEETS_COLLECTION}` as string)
+    //TODO bare string return this.db.collection(ENV.DB_USERS_COLLECTION as string)
+  }
   get users(): Collection<User> {
     return this.db.collection(`${ENV.DB_USERS_COLLECTION}` as string)
     //TODO bare string return this.db.collection(ENV.DB_USERS_COLLECTION as string)
