@@ -5,6 +5,7 @@ import RefreshToken from '~/models/schemas/RefreshToken.shema'
 import Followers from '~/models/schemas/Followers.shema'
 import VideoStatus from '~/models/schemas/VideoStatus.schema'
 import Tweet from '~/models/schemas/Tweet.chema'
+import Hashtag from '~/models/schemas/Hashtag.shema'
 config()
 const ENV = process.env
 const uri = `mongodb+srv://${ENV.DB_USERNAME}:${ENV.DB_PASSWORD}@cluster0.tuwsifh.mongodb.net/?retryWrites=true&w=majority`
@@ -79,6 +80,9 @@ class DatabaseService {
   }
   get videoStatus(): Collection<VideoStatus> {
     return this.db.collection(`${ENV.DB_VIDEO_STATUS_COLLECTION}` as string)
+  }
+  get hashtags(): Collection<Hashtag> {
+    return this.db.collection(`${ENV.DB_HASHTAGS_COLLECTION}` as string)
   }
 }
 //TODO creat object from DatabaseService
