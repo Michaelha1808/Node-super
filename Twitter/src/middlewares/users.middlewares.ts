@@ -557,5 +557,13 @@ export const changePasswordValidator = validate(
     confirm_new_password: confirmPasswordSchema
   })
 )
-
+export const isUserLoggedInValidator = (middleware: (req: Request, res: Response, next: NextFunction) => void) => {
+  return (req: Request, res: Response, next: NextFunction) => {
+    // req.header vs req.headers
+    if (req.headers.authorization) {
+      return middleware(req, res, next)
+    }
+    next()
+  }
+}
 //TODO link validatorJs https://github.com/validatorjs/validator.js
