@@ -7,6 +7,7 @@ import VideoStatus from '~/models/schemas/VideoStatus.schema'
 import Tweet from '~/models/schemas/Tweet.chema'
 import Hashtag from '~/models/schemas/Hashtag.shema'
 import Bookmark from '~/models/schemas/Bookmark.shema'
+import Like from '~/models/schemas/Like.schema'
 config()
 const ENV = process.env
 const uri = `mongodb+srv://${ENV.DB_USERNAME}:${ENV.DB_PASSWORD}@cluster0.tuwsifh.mongodb.net/?retryWrites=true&w=majority`
@@ -87,6 +88,9 @@ class DatabaseService {
   }
   get bookmarks(): Collection<Bookmark> {
     return this.db.collection(`${ENV.DB_BOOKMARKS_COLLECTION}` as string)
+  }
+  get likes(): Collection<Like> {
+    return this.db.collection(`${ENV.DB_LIKES_COLLECTION}` as string)
   }
 }
 //TODO creat object from DatabaseService

@@ -12,6 +12,7 @@ import cors from 'cors'
 import { MongoClient } from 'mongodb'
 import tweetsRouter from './routes/tweets.routes'
 import bookmarksRouter from './routes/bookmarks.routes'
+import likesRouter from './routes/likes.routes'
 
 config()
 databaseService.connect().then(() => {
@@ -33,6 +34,7 @@ app.use('/medias', mediasRouter)
 app.use('/static', staticRouter)
 app.use('/tweets', tweetsRouter)
 app.use('/bookmarks', bookmarksRouter)
+app.use('/likes', likesRouter)
 
 app.use('/static/video', express.static(UPLOAD_VIDEO_DIR))
 app.use(defaultErrorHandler)
