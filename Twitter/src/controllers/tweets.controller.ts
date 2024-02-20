@@ -11,7 +11,7 @@ export const createTweetController = async (
   next: NextFunction
 ) => {
   const { user_id } = req.decoded_authorization as TokenPayload
-  const result = await tweetsService.createTweets(user_id, req.body)
+  const result = await tweetsService.createTweet(user_id, req.body)
   res.json({
     message: 'Tweets created successfully',
     result

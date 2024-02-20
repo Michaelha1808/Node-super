@@ -23,7 +23,7 @@ class TweetsService {
     )
     return hashtagDocuments.map((hashtag) => new ObjectId(hashtag?._id))
   }
-  async createTweets(user_id: string, body: TweetRequestBody) {
+  async createTweet(user_id: string, body: TweetRequestBody) {
     const hashtags = await this.checkAndCreateHastags(body.hashtags)
     const result = await databaseService.tweets.insertOne(
       new Tweet({

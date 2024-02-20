@@ -1,12 +1,15 @@
+import { NextFunction, Request, Response } from 'express'
 import { checkSchema } from 'express-validator'
 import { isEmpty } from 'lodash'
 import { ObjectId } from 'mongodb'
-import { MediaType, TweetAudience, TweetType } from '~/constants/enums'
+import { MediaType, TweetAudience, TweetType, UserVerifyStatus } from '~/constants/enums'
 import HTTP_STATUS from '~/constants/httpStatus'
-import { TWEETS_MESSAGES } from '~/constants/messages'
+import { TWEETS_MESSAGES, USERS_MESSAGES } from '~/constants/messages'
 import { ErrorWithStatus } from '~/models/Errors'
+import Tweet from '~/models/schemas/Tweet.chema'
 import databaseService from '~/services/database.services'
 import { numberEnumToArray } from '~/utils/commons'
+import { wrapRequestHandler } from '~/utils/handlers'
 import { validate } from '~/utils/validation'
 
 const tweetTypes = numberEnumToArray(TweetType)
@@ -129,6 +132,7 @@ export const tweetIdValidator = validate(
                 message: TWEETS_MESSAGES.TWEET_NOT_FOUND
               })
             }
+            ; (req as Request).tweet = tweet
             return true
           }
         }
@@ -137,3 +141,42 @@ export const tweetIdValidator = validate(
     ['params', 'body']
   )
 )
+// want to use async and await in handler express is must be have try catch
+// if don't use try catch, must me user wrap
+export const audienceValidator = wrapRequestHandler(async (req: Request, res: Response, next: NextFunction) => {
+  const tweet = req.tweet as Tweet
+  console.log(tweet);
+  if (tweet.audience == TweetAudience.TwitterCircle) {
+    // check user watch this tweet have been logged in yet
+    if (!req.decoded_authorization) {
+      throw new ErrorWithStatus({
+        status: HTTP_STATUS.UNAUTHORIZED,
+        message: USERS_MESSAGES.ACCESS_TOKEN_IS_REQUIRED
+      })
+    }
+    // check account author (blocked or deleted)
+    const author = await databaseService.users.findOne({
+      _id: new ObjectId(tweet.user_id)
+    })
+    if (!author || author.verify == UserVerifyStatus.Banned) {
+      throw new ErrorWithStatus({
+        status: HTTP_STATUS.NOT_FOUND,
+        message: USERS_MESSAGES.USER_NOT_FOUND
+      })
+    }
+    // check user watch this tweet have been live in circle of author yet
+    const { user_id } = req.decoded_authorization
+    console.log('author', author);
+    const isInTwitterCircle = author.twitter_circle.some((user_circle_id) => user_circle_id.equals(user_id))
+    console.log('isInTwitterCircle', isInTwitterCircle)
+    console.log(author._id.equals(user_id));
+    // if not author and not in tweet circle 
+    if (!author._id.equals(user_id) && !isInTwitterCircle) {
+      throw new ErrorWithStatus({
+        status: HTTP_STATUS.FORBIDDEN,
+        message: TWEETS_MESSAGES.TWEET_IS_NOT_PUBLIC
+      })
+    }
+  }
+  next()
+})
