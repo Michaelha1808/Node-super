@@ -242,7 +242,7 @@ export const tweetIdValidator = validate(
                 message: TWEETS_MESSAGES.TWEET_NOT_FOUND
               })
             }
-            ; (req as Request).tweet = tweet
+            ;(req as Request).tweet = tweet
             return true
           }
         }
@@ -295,7 +295,14 @@ export const getTweetChildrenValidator = validate(
           options: [tweetTypes],
           errorMessage: TWEETS_MESSAGES.INVALID_TYPE
         }
-      },
+      }
+    },
+    ['query']
+  )
+)
+export const paginationValidator = validate(
+  checkSchema(
+    {
       limit: {
         isNumeric: true,
         custom: {

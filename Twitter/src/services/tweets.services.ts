@@ -4,6 +4,7 @@ import Tweet from '~/models/schemas/Tweet.schema'
 import { ObjectId, WithId } from 'mongodb'
 import Hashtag from '~/models/schemas/Hashtag.schema'
 import { TweetType } from '~/constants/enums'
+import usersService from './user.services'
 
 class TweetsService {
   async checkAndCreateHastags(hashtags: string[]) {
@@ -236,6 +237,25 @@ class TweetsService {
       tweets,
       total
     }
+  }
+  async getNewFeeds({ user_id, limit, page }: { user_id: string; limit: number; page: number }) {
+    const followed_user_ids = await databaseService.followers
+      .find(
+        {
+          user_id: new ObjectId(user_id)
+        },
+        {
+          projection: {
+            followed_user_id: 1,
+            _id: 0
+          }
+        }
+      )
+      .toArray()
+    const ids = followed_user_ids.map((item) => item.followed_user_id)
+    // want newfeeds also get tweet myself
+    ids.push(new ObjectId(user_id))
+    return followed_user_ids
   }
 }
 const tweetsService = new TweetsService()
