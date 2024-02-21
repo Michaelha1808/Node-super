@@ -13,6 +13,7 @@ import { MongoClient } from 'mongodb'
 import tweetsRouter from './routes/tweets.routes'
 import bookmarksRouter from './routes/bookmarks.routes'
 import likesRouter from './routes/likes.routes'
+// import '~/utils/fake'
 
 config()
 databaseService.connect().then(() => {

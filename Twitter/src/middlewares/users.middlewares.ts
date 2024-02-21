@@ -12,7 +12,7 @@ import { TokenPayload } from '~/models/requests/User.requests'
 import databaseService from '~/services/database.services'
 import usersService from '~/services/user.services'
 import { verifyToken } from '~/utils/jwt'
-import { hashPassword } from '~/utils/scrypto'
+import { hashPassword } from '~/utils/crypto'
 import { validate } from '~/utils/validation'
 const passwordShema: ParamSchema = {
   notEmpty: {
@@ -281,7 +281,7 @@ export const accessTokenValidator = validate(
                 token: access_token,
                 secretOrPublicKey: process.env.JWT_SECRET_ACCESS_TOKEN as string
               })
-              ;(req as Request).decoded_authorization = decoded_authorization
+                ; (req as Request).decoded_authorization = decoded_authorization
             } catch (error) {
               throw new ErrorWithStatus({
                 message: capitalize((error as JsonWebTokenError).message),
@@ -321,7 +321,7 @@ export const refreshTokenValidator = validate(
                   status: HTTP_STATUS.UNAUTHORIZED
                 })
               }
-              ;(req as Request).decoded_refresh_token = decoded_refresh_token
+              ; (req as Request).decoded_refresh_token = decoded_refresh_token
             } catch (error) {
               if (error instanceof JsonWebTokenError) {
                 throw new ErrorWithStatus({
@@ -358,7 +358,7 @@ export const emailVerifyTokenValidator = validate(
                 token: value,
                 secretOrPublicKey: process.env.JWT_SECRET_EMAIL_VERIFY_TOKEN as string
               })
-              ;(req as Request).decoded_email_verify_token = decoded_email_verify_token
+                ; (req as Request).decoded_email_verify_token = decoded_email_verify_token
             } catch (error) {
               throw new ErrorWithStatus({
                 message: capitalize((error as JsonWebTokenError).message),

@@ -1,7 +1,7 @@
 import User from '~/models/schemas/User.schema'
 import databaseService from './database.services'
 import { RegisterReqBody, UpdateMeReqBody } from '~/models/requests/User.requests'
-import { hashPassword } from '~/utils/scrypto'
+import { hashPassword } from '~/utils/crypto'
 import { signToken, verifyToken } from '~/utils/jwt'
 import { TokenType, UserVerifyStatus } from '~/constants/enums'
 import RefreshToken from '~/models/schemas/RefreshToken.shema'
@@ -10,7 +10,7 @@ import { config } from 'dotenv'
 import { USERS_MESSAGES } from '~/constants/messages'
 import { ErrorWithStatus } from '~/models/Errors'
 import HTTP_STATUS from '~/constants/httpStatus'
-import Followers from '~/models/schemas/Followers.shema'
+import Followers from '~/models/schemas/Follower.schema'
 import axios from 'axios'
 config()
 

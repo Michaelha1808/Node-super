@@ -6,7 +6,7 @@ import { MediaType, TweetAudience, TweetType, UserVerifyStatus } from '~/constan
 import HTTP_STATUS from '~/constants/httpStatus'
 import { TWEETS_MESSAGES, USERS_MESSAGES } from '~/constants/messages'
 import { ErrorWithStatus } from '~/models/Errors'
-import Tweet from '~/models/schemas/Tweet.chema'
+import Tweet from '~/models/schemas/Tweet.schema'
 import databaseService from '~/services/database.services'
 import { numberEnumToArray } from '~/utils/commons'
 import { wrapRequestHandler } from '~/utils/handlers'
@@ -242,7 +242,7 @@ export const tweetIdValidator = validate(
                 message: TWEETS_MESSAGES.TWEET_NOT_FOUND
               })
             }
-            ;(req as Request).tweet = tweet
+            ; (req as Request).tweet = tweet
             return true
           }
         }
