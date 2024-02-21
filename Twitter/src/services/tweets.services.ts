@@ -57,13 +57,15 @@ class TweetsService {
         returnDocument: 'after',
         projection: {
           guest_views: 1,
-          user_views: 1
+          user_views: 1,
+          updated_at: 1
         }
       }
     )
     return result as WithId<{
       guest_views: number
       user_views: number
+      updated_at: Date
     }>
   }
   async getTweetChildren({

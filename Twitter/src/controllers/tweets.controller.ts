@@ -23,7 +23,8 @@ export const getTweetController = async (req: Request, res: Response, next: Next
   const tweet = {
     ...req.tweet,
     guest_views: result.guest_views,
-    user_views: result.user_views
+    user_views: result.user_views,
+    updated_at: result.updated_at
   }
   res.json({
     message: 'Get Tweet successfully',
