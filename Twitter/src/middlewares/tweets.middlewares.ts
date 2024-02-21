@@ -127,7 +127,7 @@ export const tweetIdValidator = validate(
               .aggregate<Tweet>([
                 {
                   $match: {
-                    _id: new ObjectId('65d41e479a92a6d41be6b0d7')
+                    _id: new ObjectId(value)
                   }
                 },
                 {
@@ -200,7 +200,7 @@ export const tweetIdValidator = validate(
                           input: '$tweet_children',
                           as: 'item',
                           cond: {
-                            $eq: ['$$item.type', 1]
+                            $eq: ['$$item.type', TweetType.Retweet]
                           }
                         }
                       }
@@ -211,7 +211,7 @@ export const tweetIdValidator = validate(
                           input: '$tweet_children',
                           as: 'item',
                           cond: {
-                            $eq: ['$$item.type', 2]
+                            $eq: ['$$item.type', TweetType.Comment]
                           }
                         }
                       }
@@ -222,13 +222,10 @@ export const tweetIdValidator = validate(
                           input: '$tweet_children',
                           as: 'item',
                           cond: {
-                            $eq: ['$$item.type', 3]
+                            $eq: ['$$item.type', TweetType.QuoteTweet]
                           }
                         }
                       }
-                    },
-                    views: {
-                      $add: ['$user_views', '$guest_views']
                     }
                   }
                 },
@@ -245,7 +242,7 @@ export const tweetIdValidator = validate(
                 message: TWEETS_MESSAGES.TWEET_NOT_FOUND
               })
             }
-            ; (req as Request).tweet = tweet
+            ;(req as Request).tweet = tweet
             return true
           }
         }
