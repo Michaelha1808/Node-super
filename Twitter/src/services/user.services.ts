@@ -12,6 +12,7 @@ import { ErrorWithStatus } from '~/models/Errors'
 import HTTP_STATUS from '~/constants/httpStatus'
 import Followers from '~/models/schemas/Follower.schema'
 import axios from 'axios'
+import { sendVerifyEmail } from '~/utils/email'
 config()
 
 class UsersService {
@@ -111,7 +112,21 @@ class UsersService {
     await databaseService.refreshToken.insertOne(
       new RefreshToken({ user_id: new ObjectId(user_id), token: refresh_token, iat, exp })
     )
+    // flow
+    // 1: server send email to user
+    // 2: user click link in email
+    // 3: Client send request with email_verify_token
+    // 5: Client receive access_token and refresh_token
     console.log('email_verify_token', email_verify_token)
+    await sendVerifyEmail(
+      payload.email,
+      'Verify your email',
+      `
+      <h1>Verify your email</h1>
+      <p>Click <a href="${process.env.CLIENT_URL}/verify-email?token=${email_verify_token}" >here</a> 
+      to verify your email </p>
+    `
+    )
     return {
       access_token,
       refresh_token
