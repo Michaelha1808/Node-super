@@ -12,7 +12,7 @@ import { ErrorWithStatus } from '~/models/Errors'
 import HTTP_STATUS from '~/constants/httpStatus'
 import Followers from '~/models/schemas/Follower.schema'
 import axios from 'axios'
-import { sendVerifyEmail } from '~/utils/email'
+import { sendForgotPasswordEmail, sendVerifyRegisterEmail } from '~/utils/email'
 config()
 
 class UsersService {
@@ -118,15 +118,7 @@ class UsersService {
     // 3: Client send request with email_verify_token
     // 5: Client receive access_token and refresh_token
     console.log('email_verify_token', email_verify_token)
-    await sendVerifyEmail(
-      payload.email,
-      'Verify your email',
-      `
-      <h1>Verify your email</h1>
-      <p>Click <a href="${process.env.CLIENT_URL}/verify-email?token=${email_verify_token}" >here</a> 
-      to verify your email </p>
-    `
-    )
+    await sendVerifyRegisterEmail(payload.email, email_verify_token)
     return {
       access_token,
       refresh_token
@@ -306,12 +298,13 @@ class UsersService {
       refresh_token
     }
   }
-  async resendVerifyEmail(user_id: string) {
+  async resendVerifyEmail(user_id: string, email: string) {
     const email_verify_token = await this.signEmailVerifyToken({
       user_id,
       verify: UserVerifyStatus.Unverified
     })
     // Gỉa bộ gửi email
+    await sendVerifyRegisterEmail(email, email_verify_token)
     console.log('Rensend verify email: ', email_verify_token)
 
     // Cập nhật lại giá trị email_verify_token trong document user
@@ -330,7 +323,7 @@ class UsersService {
       message: USERS_MESSAGES.RESEND_VERIFY_EMAIL_SUCCESS
     }
   }
-  async forgotPassword({ user_id, verify }: { user_id: string; verify: UserVerifyStatus }) {
+  async forgotPassword({ user_id, verify, email }: { user_id: string; verify: UserVerifyStatus; email: string }) {
     const forgot_password_token = await this.signForgotPasswordToken({
       user_id,
       verify
@@ -344,6 +337,7 @@ class UsersService {
       }
     ])
     // Gửi email kèm đường link đến email người dùng: https://twitter.com/forgot-password?token=token
+    await sendForgotPasswordEmail(email, forgot_password_token)
     console.log('forgot_password_token: ', forgot_password_token)
     return {
       message: USERS_MESSAGES.CHECK_EMAIL_TO_RESET_PASSWORD
