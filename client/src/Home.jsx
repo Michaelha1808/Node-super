@@ -41,16 +41,12 @@ export default function Home() {
       </div>
       <h2>Video streaming</h2>
       <video controls width={500}>
-        <source
-          src="http://localhost:4000/static/video-stream/RV8YyRxkC9yovMGSeePaI"
-          type="video/mp4"
-        />
+        <source type="video/mp4" />
       </video>
       <h2>Hls streaming</h2>
       <h2>HLS Streaming</h2>
       <MediaPlayer
         title="Sprite Fight"
-        src="http://localhost:4000/static/video-hls/Y0FTMTQazzbB3CGsA8yOH/master.m3u8"
         // poster='https://image.mux.com/VZtzUzGRv02OhRnZCxcNg49OilvolTqdnFLEqBsTwaxU/thumbnail.webp?time=268&width=980'
         // thumbnails='https://media-files.vidstack.io/sprite-fight/thumbnails.vtt'
         aspectRatio={16 / 9}
