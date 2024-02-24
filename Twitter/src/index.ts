@@ -14,6 +14,9 @@ import tweetsRouter from './routes/tweets.routes'
 import bookmarksRouter from './routes/bookmarks.routes'
 import likesRouter from './routes/likes.routes'
 import searchRouter from './routes/search.routes'
+import { createServer } from 'http'
+import { Server } from 'socket.io'
+import { isObject } from 'lodash'
 
 // import '~/utils/s3'
 
@@ -26,6 +29,7 @@ databaseService.connect().then(() => {
   databaseService.indexTweets()
 })
 const app = express()
+const httpServer = createServer(app)
 app.use(cors())
 const port = process.env.PORT || 4000
 // check folder uploads exist
@@ -43,7 +47,21 @@ app.use('/search', searchRouter)
 
 app.use('/static/video', express.static(UPLOAD_VIDEO_DIR))
 app.use(defaultErrorHandler)
-app.listen(port, () => {
+
+const io = new Server(httpServer, {
+  cors: {
+    origin: 'http://localhost:3000'
+  }
+})
+
+io.on('connection', (socket) => {
+  console.log(`User ${socket.id}  connected`)
+  socket.on('disconnect', () => {
+    console.log(`User ${socket.id}  disconnected`)
+  })
+})
+
+httpServer.listen(port, () => {
   console.log(`Listening on port ${port}`)
 })
 
