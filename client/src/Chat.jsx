@@ -11,31 +11,52 @@ export default function Chat() {
     socket.connect();
     socket.on("receive private message", (data) => {
       const content = data.content;
-      setMessages((message) => [...message, content]);
+      setMessages((message) => [
+        ...message,
+        {
+          content,
+          isSender: false,
+        },
+      ]);
     });
     return () => {
       socket.disconnect();
     };
   }, []);
-  const handleSubmit = (e) => {
+  const send = (e) => {
     e.preventDefault();
     setValue("");
     socket.emit("private message", {
       content: value,
       to: "65d847b2cf6270fc066da37f", // user_id
     });
+    setMessages((message) => [
+      ...message,
+      {
+        content: value,
+        isSender: true,
+      },
+    ]);
   };
   return (
     <div>
       <h1>Chat</h1>
-      <div>
+      <div className="chat">
         {messages.map((message, index) => (
           <div key={index}>
-            <div>{message}</div>
+            <div className="message-container">
+              <div
+                className={
+                  "message " + (message.isSender ? "message-right" : "")
+                }
+              >
+                {message.content}
+              </div>
+            </div>
           </div>
         ))}
       </div>
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={send}>
         <input
           type="text"
           onChange={(e) => setValue(e.target.value)}
