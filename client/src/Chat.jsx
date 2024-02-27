@@ -41,6 +41,9 @@ export default function Chat() {
     socket.on("connect_error", (err) => {
       console.log(err.data);
     });
+    socket.on("disconnect", (reason) => {
+      console.log(reason);
+    });
     return () => {
       socket.disconnect();
     };
