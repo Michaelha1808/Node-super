@@ -9,7 +9,7 @@ import { config } from 'dotenv'
 import { UPLOAD_VIDEO_DIR } from './constants/dir'
 import staticRouter from './routes/static.routes'
 import cors from 'cors'
-import { MongoClient } from 'mongodb'
+import { MongoClient, ObjectId } from 'mongodb'
 import tweetsRouter from './routes/tweets.routes'
 import bookmarksRouter from './routes/bookmarks.routes'
 import likesRouter from './routes/likes.routes'
@@ -18,6 +18,7 @@ import { createServer } from 'http'
 import { Server } from 'socket.io'
 import { isObject } from 'lodash'
 import Conversation from './models/schemas/Conversations.schema'
+import conversationsRouter from './routes/conversations.routes'
 
 // import '~/utils/s3'
 
@@ -45,6 +46,7 @@ app.use('/tweets', tweetsRouter)
 app.use('/bookmarks', bookmarksRouter)
 app.use('/likes', likesRouter)
 app.use('/search', searchRouter)
+app.use('/conversations', conversationsRouter)
 
 app.use('/static/video', express.static(UPLOAD_VIDEO_DIR))
 app.use(defaultErrorHandler)
@@ -71,11 +73,13 @@ io.on('connection', (socket) => {
     if (!receiver_socket_id) {
       return
     }
-    await databaseService.conversations.insertOne(new Conversation({
-      sender_id: data.from,
-      receiver_id: data.to,
-      content: data.content
-    }))
+    await databaseService.conversations.insertOne(
+      new Conversation({
+        sender_id: new ObjectId(data.from),
+        receiver_id: new ObjectId(data.to),
+        content: data.content
+      })
+    )
     socket.to(receiver_socket_id).emit('receive private message', {
       content: data.content,
       from: user_id
