@@ -35,12 +35,15 @@ export default function Chat() {
   };
   useEffect(() => {
     socket.auth = {
-      _id: profile._id,
+      Authorization: `Bearer ${localStorage.getItem("access_token")}`,
     };
     socket.connect();
     socket.on("receive_message", (data) => {
       const { payload } = data;
       setConversations((conversations) => [...conversations, payload]);
+    });
+    socket.on("connect_error", (err) => {
+      console.log(err.data);
     });
     return () => {
       socket.disconnect();
