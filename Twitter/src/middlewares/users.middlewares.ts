@@ -520,6 +520,14 @@ export const followValidator = validate(
     ['body']
   )
 )
+export const getConversationsValidator = validate(
+  checkSchema(
+    {
+      receiver_id: userIdShema
+    },
+    ['params']
+  )
+)
 export const unfollowValidator = validate(
   checkSchema(
     {
