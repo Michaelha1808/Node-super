@@ -25,21 +25,21 @@ class ConversationService {
         }
       ]
     }
-    // const [conversations, total] = await Promise.all([
-    //   databaseService.conversations
-    //     .find(match)
-    //     .skip(limit * (page - 1))
-    //     .limit(limit)
-    //     .toArray(),
-    //   databaseService.conversations.countDocuments(match)
-    // ])
-    const conversations = await databaseService.conversations
-      .find(match)
-      .skip(limit * (page - 1))
-      .limit(limit)
-      .toArray()
-    const total = await databaseService.conversations.countDocuments(match)
-    console.log(conversations, total)
+    const [conversations, total] = await Promise.all([
+      databaseService.conversations
+        .find(match)
+        .skip(limit * (page - 1))
+        .limit(limit)
+        .toArray(),
+      databaseService.conversations.countDocuments(match)
+    ])
+    // const conversations = await databaseService.conversations
+    //   .find(match)
+    //   .skip(limit * (page - 1))
+    //   .limit(limit)
+    //   .toArray()
+    // const total = await databaseService.conversations.countDocuments(match)
+    // console.log(conversations, total)
     return {
       conversations,
       total

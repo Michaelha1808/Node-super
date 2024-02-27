@@ -14,8 +14,7 @@ const usernames = [
 ];
 export default function Chat() {
   const [value, setValue] = useState("");
-  const [messages, setMessages] = useState([]);
-
+  const [conversations, setConversations] = useState([]);
   const [receiver, setReceiver] = useState("");
   const getProfile = (username) => {
     axios
@@ -32,36 +31,54 @@ export default function Chat() {
       _id: profile._id,
     };
     socket.connect();
-    socket.on("receive private message", (data) => {
-      const content = data.content;
-      setMessages((message) => [
-        ...message,
-        {
-          content,
-          isSender: false,
-        },
-      ]);
+    socket.on("receive_message", (data) => {
+      const { payload } = data;
+      setConversations((conversations) => [...conversations, payload]);
     });
     return () => {
       socket.disconnect();
     };
   }, []);
+
+  useEffect(() => {
+    if (receiver) {
+      axios
+        .get(`/conversations/receivers/${receiver}`, {
+          baseURL: import.meta.env.VITE_API_URL,
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+          },
+          params: {
+            limit: 10,
+            page: 1,
+          },
+        })
+        .then((res) => {
+          setConversations(res.data.result.conversations);
+        });
+    }
+  }, [receiver]);
+
   const send = (e) => {
     e.preventDefault();
     setValue("");
-    socket.emit("private message", {
+    const conversation = {
       content: value,
-      to: receiver, // user_id
-      from: profile._id,
+      sender_id: profile._id,
+      receiver_id: receiver,
+    };
+    socket.emit("send_message", {
+      payload: conversation,
     });
-    setMessages((message) => [
-      ...message,
+    setConversations((conversations) => [
+      ...conversations,
       {
-        content: value,
-        isSender: true,
+        ...conversation,
+        _id: new Date().getTime(),
       },
     ]);
   };
+
   return (
     <div>
       <h1>Chat</h1>
@@ -75,15 +92,18 @@ export default function Chat() {
         ))}
       </div>
       <div className="chat">
-        {messages.map((message, index) => (
-          <div key={index}>
+        {conversations.map((conversation) => (
+          <div key={conversation._id}>
             <div className="message-container">
               <div
                 className={
-                  "message " + (message.isSender ? "message-right" : "")
+                  "message " +
+                  (conversation.sender_id === profile._id
+                    ? "message-right"
+                    : "")
                 }
               >
-                {message.content}
+                {conversation.content}
               </div>
             </div>
           </div>
@@ -95,7 +115,7 @@ export default function Chat() {
           onChange={(e) => setValue(e.target.value)}
           value={value}
         />
-        <button>send</button>
+        <button type="submit">Send</button>
       </form>
     </div>
   );
