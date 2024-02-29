@@ -49,7 +49,6 @@ const app = express()
 const httpServer = createServer(app)
 app.use(cors())
 const port = envConfig.port
-console.log(envConfig)
 // check folder uploads exist
 initFolder()
 app.use(morgan('dev'))
