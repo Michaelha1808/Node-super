@@ -7,19 +7,20 @@ import mediasRouter from './routes/medias.routes'
 import { initFolder } from './utils/file'
 import { UPLOAD_VIDEO_DIR } from './constants/dir'
 import staticRouter from './routes/static.routes'
-import cors from 'cors'
+import cors, { CorsOptions } from 'cors'
 import tweetsRouter from './routes/tweets.routes'
 import bookmarksRouter from './routes/bookmarks.routes'
 import likesRouter from './routes/likes.routes'
 import searchRouter from './routes/search.routes'
 import { createServer } from 'http'
+import helmet from 'helmet'
 import YAML from 'yaml'
 import swaggerUi from 'swagger-ui-express'
 import swaggerJsdoc from 'swagger-jsdoc'
 
 import conversationsRouter from './routes/conversations.routes'
 import initSocket from './utils/socket'
-import { envConfig } from './constants/config'
+import { envConfig, isProduction } from './constants/config'
 // import fs from 'fs'
 // import path from 'path'
 
@@ -47,7 +48,11 @@ databaseService.connect().then(() => {
 })
 const app = express()
 const httpServer = createServer(app)
-app.use(cors())
+app.use(helmet())
+const corsOptions: CorsOptions = {
+  origin: isProduction ? envConfig.clientUrl : '*'
+}
+app.use(cors(corsOptions))
 const port = envConfig.port
 // check folder uploads exist
 initFolder()
