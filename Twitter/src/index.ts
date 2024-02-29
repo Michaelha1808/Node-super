@@ -5,7 +5,6 @@ import { defaultErrorHandler } from './middlewares/error.middewares'
 import morgan from 'morgan'
 import mediasRouter from './routes/medias.routes'
 import { initFolder } from './utils/file'
-import { config } from 'dotenv'
 import { UPLOAD_VIDEO_DIR } from './constants/dir'
 import staticRouter from './routes/static.routes'
 import cors from 'cors'
@@ -20,6 +19,7 @@ import swaggerJsdoc from 'swagger-jsdoc'
 
 import conversationsRouter from './routes/conversations.routes'
 import initSocket from './utils/socket'
+import { envConfig } from './constants/config'
 // import fs from 'fs'
 // import path from 'path'
 
@@ -34,10 +34,10 @@ const options: swaggerJsdoc.Options = {
       version: '1.0.0'
     }
   },
-  apis: ['./src/openapi/*.yaml'] // files containing annotations as above
+  apis: ['./openapi/*.yaml'] // files containing annotations as above
 }
 const openapiSpecification = swaggerJsdoc(options)
-config()
+
 databaseService.connect().then(() => {
   databaseService.indexUsers()
   databaseService.indexRefreshTokens()
@@ -48,7 +48,8 @@ databaseService.connect().then(() => {
 const app = express()
 const httpServer = createServer(app)
 app.use(cors())
-const port = process.env.PORT || 4000
+const port = envConfig.port
+console.log(envConfig)
 // check folder uploads exist
 initFolder()
 app.use(morgan('dev'))
