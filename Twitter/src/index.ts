@@ -14,12 +14,29 @@ import bookmarksRouter from './routes/bookmarks.routes'
 import likesRouter from './routes/likes.routes'
 import searchRouter from './routes/search.routes'
 import { createServer } from 'http'
+import YAML from 'yaml'
+import swaggerUi from 'swagger-ui-express'
+import swaggerJsdoc from 'swagger-jsdoc'
 
 import conversationsRouter from './routes/conversations.routes'
 import initSocket from './utils/socket'
+// import fs from 'fs'
+// import path from 'path'
 
 // import '~/utils/s3'
-
+// const file = fs.readFileSync(path.resolve('Twitter-swagger.yaml'), 'utf-8')
+// const swaggerDocument = YAML.parse(file)
+const options: swaggerJsdoc.Options = {
+  definition: {
+    openapi: '3.0.0',
+    info: {
+      title: 'Hello World',
+      version: '1.0.0'
+    }
+  },
+  apis: ['./src/openapi/*.yaml'] // files containing annotations as above
+}
+const openapiSpecification = swaggerJsdoc(options)
 config()
 databaseService.connect().then(() => {
   databaseService.indexUsers()
@@ -34,9 +51,9 @@ app.use(cors())
 const port = process.env.PORT || 4000
 // check folder uploads exist
 initFolder()
-
 app.use(morgan('dev'))
 app.use(express.json())
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(openapiSpecification))
 app.use('/users', usersRouter)
 app.use('/medias', mediasRouter)
 app.use('/static', staticRouter)

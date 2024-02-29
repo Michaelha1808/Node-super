@@ -37,11 +37,44 @@ import { UpdateMeReqBody } from '~/models/requests/User.requests'
 import { wrapRequestHandler } from '~/utils/handlers'
 
 const usersRouter = Router()
+
 /**
- * Description. login a new access
- * Path: /login
- * Method: Post
- * Body:{ email: string, password: string}
+ * @swagger
+ * /users/login:
+ *   post:
+ *     tags:
+ *       - users
+ *     summary: Đăng nhập
+ *     description: Đăng nhập vào hệ thống
+ *     operationId: login
+ *     requestBody:
+ *       description: Thông tin đăng nhập
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: "#/components/schemas/LoginBody"
+ *     responses:
+ *       "200":
+ *         description: Đăng nhập thành công
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Login success
+ *                 result:
+ *                   $ref: "#/components/schemas/SuccessAuthentication"
+ *       "400":
+ *         description: Invalid input
+ *       "422":
+ *         description: Validation exception
+ *     security:
+ *       - petstore_auth:
+ *           - write:pets
+ *           - read:pets
  */
 
 usersRouter.post('/login', loginValidator, wrapRequestHandler(loginController))
