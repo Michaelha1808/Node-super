@@ -1,5 +1,5 @@
 import { Collection, Db, MongoClient } from 'mongodb'
-import { config } from 'dotenv'
+
 import User from '~/models/schemas/User.schema'
 import RefreshToken from '~/models/schemas/RefreshToken.shema'
 import Followers from '~/models/schemas/Follower.schema'
@@ -9,9 +9,9 @@ import Hashtag from '~/models/schemas/Hashtag.schema'
 import Bookmark from '~/models/schemas/Bookmark.shema'
 import Like from '~/models/schemas/Like.schema'
 import Conversation from '~/models/schemas/Conversations.schema'
-config()
-const ENV = process.env
-const uri = `mongodb+srv://${ENV.DB_USERNAME}:${ENV.DB_PASSWORD}@cluster0.tuwsifh.mongodb.net/?retryWrites=true&w=majority`
+import { envConfig } from '~/constants/config'
+
+const uri = `mongodb+srv://${envConfig.dbUsername}:${envConfig.dbPassword}@cluster0.tuwsifh.mongodb.net/?retryWrites=true&w=majority`
 
 // Create a MongoClient with a MongoClientOptions object to set the Stable API version
 
@@ -20,7 +20,7 @@ class DatabaseService {
   private db: Db
   constructor() {
     this.client = new MongoClient(uri)
-    this.db = this.client.db(`${ENV.DB_NAME}`)
+    this.db = this.client.db(`${envConfig.dbName}`)
   }
   async connect() {
     try {
@@ -74,33 +74,33 @@ class DatabaseService {
     }
   }
   get tweets(): Collection<Tweet> {
-    return this.db.collection(`${ENV.DB_TWEETS_COLLECTION}` as string)
+    return this.db.collection(`${envConfig.dbTweetsCollection}` as string)
     //TODO bare string return this.db.collection(ENV.DB_USERS_COLLECTION as string)
   }
   get users(): Collection<User> {
-    return this.db.collection(`${ENV.DB_USERS_COLLECTION}` as string)
+    return this.db.collection(`${envConfig.dbUsersCollection}` as string)
     //TODO bare string return this.db.collection(ENV.DB_USERS_COLLECTION as string)
   }
   get refreshToken(): Collection<RefreshToken> {
-    return this.db.collection(`${ENV.DB_REFRESH_TOKENS_COLLECTION}` as string)
+    return this.db.collection(`${envConfig.dbRefreshTokensCollection}` as string)
   }
   get followers(): Collection<Followers> {
-    return this.db.collection(`${ENV.DB_FOLLOWERS_COLLECTION}` as string)
+    return this.db.collection(`${envConfig.dbFollowersCollection}` as string)
   }
   get videoStatus(): Collection<VideoStatus> {
-    return this.db.collection(`${ENV.DB_VIDEO_STATUS_COLLECTION}` as string)
+    return this.db.collection(`${envConfig.dbVideoStatusCollection}` as string)
   }
   get hashtags(): Collection<Hashtag> {
-    return this.db.collection(`${ENV.DB_HASHTAGS_COLLECTION}` as string)
+    return this.db.collection(`${envConfig.dbHashtagsCollection}` as string)
   }
   get bookmarks(): Collection<Bookmark> {
-    return this.db.collection(`${ENV.DB_BOOKMARKS_COLLECTION}` as string)
+    return this.db.collection(`${envConfig.dbBookmarksCollection}` as string)
   }
   get likes(): Collection<Like> {
-    return this.db.collection(`${ENV.DB_LIKES_COLLECTION}` as string)
+    return this.db.collection(`${envConfig.dbLikesCollection}` as string)
   }
   get conversations(): Collection<Conversation> {
-    return this.db.collection(process.env.DB_CONVERSATION_COLLECTION as string)
+    return this.db.collection(envConfig.dbConversationCollection as string)
   }
 }
 //TODO creat object from DatabaseService
