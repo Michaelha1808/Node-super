@@ -14,6 +14,7 @@ import likesRouter from './routes/likes.routes'
 import searchRouter from './routes/search.routes'
 import { createServer } from 'http'
 import helmet from 'helmet'
+import { rateLimit } from 'express-rate-limit'
 import YAML from 'yaml'
 import swaggerUi from 'swagger-ui-express'
 import swaggerJsdoc from 'swagger-jsdoc'
@@ -47,6 +48,14 @@ databaseService.connect().then(() => {
   databaseService.indexTweets()
 })
 const app = express()
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  limit: 100, // Limit each IP to 100 requests per `window` (here, per 15 minutes).
+  standardHeaders: 'draft-7', // draft-6: `RateLimit-*` headers; draft-7: combined `RateLimit` header
+  legacyHeaders: false // Disable the `X-RateLimit-*` headers.
+  // store: ... , // Use an external store for consistency across multiple server instances.
+})
+app.use(limiter)
 const httpServer = createServer(app)
 app.use(helmet())
 const corsOptions: CorsOptions = {
