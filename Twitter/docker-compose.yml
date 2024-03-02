@@ -1,0 +1,8 @@
+version: '3'
+services:
+  twitter:
+    image: michaelha1808/twitter:v0
+    ports:
+      - '4000:4000'
+    volumes:
+      - '~/Node-project/node-ts/Node-supe/Twitter/uploads:/app/uploads'
